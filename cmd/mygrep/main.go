@@ -40,7 +40,7 @@ func main() {
 }
 
 func matchLine(line []byte, pattern string) (bool, error) {
-	if utf8.RuneCountInString(pattern) != 1 && pattern != `\d` && pattern != `\w` {
+	if utf8.RuneCountInString(pattern) != 1 && pattern != `\d` && pattern != `\w` && !(strings.HasPrefix(pattern, "[") && strings.HasSuffix(pattern, "]")) {
 		return false, fmt.Errorf("unsupported pattern: %q", pattern)
 	}
 
@@ -59,6 +59,11 @@ func matchLine(line []byte, pattern string) (bool, error) {
 		ok = bytes.ContainsAny(line, chars)
 	default:
 		ok = bytes.ContainsAny(line, pattern)
+	}
+
+	if strings.HasPrefix(pattern, "[") && strings.HasSuffix(pattern, "]") {
+		chars := strings.TrimSuffix(strings.TrimPrefix(pattern, "["), "]")
+		ok = bytes.ContainsAny(line, chars)
 	}
 
 	return ok, nil
