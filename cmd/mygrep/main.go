@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -39,7 +40,7 @@ func main() {
 }
 
 func matchLine(line []byte, pattern string) (bool, error) {
-	if utf8.RuneCountInString(pattern) != 1 && pattern != `\d` {
+	if utf8.RuneCountInString(pattern) != 1 && pattern != `\d` && pattern != `\w` {
 		return false, fmt.Errorf("unsupported pattern: %q", pattern)
 	}
 
@@ -51,6 +52,10 @@ func matchLine(line []byte, pattern string) (bool, error) {
 	switch pattern {
 	case `\d`:
 		chars := "123456789"
+		ok = bytes.ContainsAny(line, chars)
+	case `\w`:
+		alpha := "abcdefghijklmnopqrstuvwxyz"
+		chars := "123456789" + alpha + strings.ToUpper(alpha) + "_"
 		ok = bytes.ContainsAny(line, chars)
 	default:
 		ok = bytes.ContainsAny(line, pattern)
