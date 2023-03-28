@@ -38,7 +38,10 @@ func TestMatch(t *testing.T) {
 		{name: "not match: \\d \\w\\w\\ws, 1 dog", regexp: `\d \w\w\ws`, text: "1 dog", want: false},
 
 		{name: "match: ^log", regexp: `^log`, text: "log", want: true},
-		{name: "not match: ^log", regexp: `^log`, text: "slog", want: true},
+		{name: "not match: ^log", regexp: `^log`, text: "slog", want: false},
+
+		{name: "match: dog$", regexp: `dog$`, text: "dog", want: true},
+		{name: "not match: dog$", regexp: `dog$`, text: "dogs", want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
