@@ -59,15 +59,20 @@ func matchHere(regexp, text string) bool {
 		return matchStar(regexp[0], regexp[2:], text)
 	case text != "" && (regexp[0] == '.' || regexp[0] == text[0]):
 		return matchHere(regexp[1:], text[1:])
-	case len(regexp) >= 2 && regexp[:2] == `\d`:
+	case text != "" && len(regexp) >= 2 && regexp[:2] == `\d`:
 		text, match := matchNum(text)
 		if match {
 			return matchHere(regexp[2:], text)
 		}
-	case len(regexp) >= 2 && regexp[:2] == `\w`:
+	case text != "" && len(regexp) >= 2 && regexp[:2] == `\w`:
 		text, match := matchAlphaNumeric(text)
 		if match {
 			return matchHere(regexp[2:], text)
+		}
+	case text != "" && len(regexp) >= 2 && regexp[0] == '[':
+		regexp, text, match := matchGroup(regexp, text, regexp[1] == '^')
+		if match {
+			return matchHere(regexp, text)
 		}
 	}
 	return false
@@ -117,4 +122,32 @@ func matchNum(text string) (string, bool) {
 
 func matchAlphaNumeric(text string) (string, bool) {
 	return matchType(text, alphaNumeric)
+}
+
+func matchGroup(regexp, text string, negative bool) (reg, tex string, match bool) {
+	groupStartIdx := 1
+	if negative {
+		groupStartIdx = 2
+	}
+
+	var (
+		regi     = strings.Index(regexp, "]")
+		group    = regexp[groupStartIdx:regi]
+		matchAny = false
+	)
+	for _, r := range []byte(group) {
+		for i, t := range []byte(text) {
+			match := matchHere(string(r), string(t))
+			if match {
+				matchAny = true
+				text = text[i+1:]
+			}
+		}
+	}
+
+	if !matchAny {
+		return "", "", negative
+	}
+
+	return regexp[regi+1:], text, !negative
 }

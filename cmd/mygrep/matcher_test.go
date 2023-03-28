@@ -23,8 +23,8 @@ func TestMatch(t *testing.T) {
 		{name: "match: [abc], apple", regexp: `[abc]`, text: "apple", want: true},
 		{name: "not match: [abc], dog", regexp: `[abc]`, text: "dog", want: false},
 
-		{name: "match: [^abc], cab", regexp: `[^abc]`, text: "cab", want: true},
-		{name: "not match: [^abc], dog", regexp: `[^abc]`, text: "dog", want: false},
+		{name: "not match: [^abc], dog", regexp: `[^abc]`, text: "dog", want: true},
+		{name: "match: [^abc], cab", regexp: `[^abc]`, text: "cab", want: false},
 
 		{name: "match: \\d apple, 1 apple", regexp: `\d apple`, text: "1 apple", want: true},
 		{name: "not match: \\d apple, 1 orange", regexp: `\d apple`, text: "1 orange", want: false},
