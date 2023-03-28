@@ -131,16 +131,17 @@ func matchGroup(regexp, text string, negative bool) (reg, tex string, match bool
 	}
 
 	var (
-		regi     = strings.Index(regexp, "]")
-		group    = regexp[groupStartIdx:regi]
-		matchAny = false
+		regi            = strings.Index(regexp, "]")
+		group           = regexp[groupStartIdx:regi]
+		matchAny        = false
+		maxTextMatchIdx = 0
 	)
 	for _, r := range []byte(group) {
 		for i, t := range []byte(text) {
 			match := matchHere(string(r), string(t))
 			if match {
 				matchAny = true
-				text = text[i+1:]
+				maxTextMatchIdx = i
 			}
 		}
 	}
@@ -149,5 +150,5 @@ func matchGroup(regexp, text string, negative bool) (reg, tex string, match bool
 		return "", "", negative
 	}
 
-	return regexp[regi+1:], text, !negative
+	return regexp[regi+1:], text[maxTextMatchIdx+1:], !negative
 }
