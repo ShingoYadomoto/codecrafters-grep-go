@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strings"
+)
+
 // Implemented with reference to "A Regular Expression Matcher" by Rob Pike
 
 //    /* match: search for regexp anywhere in text */
@@ -55,6 +59,16 @@ func matchHere(regexp, text string) bool {
 		return matchStar(regexp[0], regexp[2:], text)
 	case text != "" && (regexp[0] == '.' || regexp[0] == text[0]):
 		return matchHere(regexp[1:], text[1:])
+	case len(regexp) >= 2 && regexp[:2] == `\d`:
+		text, match := matchNum(text)
+		if match {
+			return matchHere(regexp[2:], text)
+		}
+	case len(regexp) >= 2 && regexp[:2] == `\w`:
+		text, match := matchAlphaNumeric(text)
+		if match {
+			return matchHere(regexp[2:], text)
+		}
 	}
 	return false
 }
@@ -80,4 +94,27 @@ func matchStar(c byte, regexp, text string) bool {
 		}
 		text = text[1:]
 	}
+}
+
+const (
+	num          = "0123456789"
+	smallAlpha   = "abcdefghijklmnopqrstuvwxyz"
+	LargeAlpha   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	alphaNumeric = smallAlpha + LargeAlpha + num + "_"
+)
+
+func matchType(text string, t string) (string, bool) {
+	i := strings.IndexAny(text, t)
+	if i == -1 {
+		return "", false
+	}
+	return text[i+1:], true
+}
+
+func matchNum(text string) (string, bool) {
+	return matchType(text, num)
+}
+
+func matchAlphaNumeric(text string) (string, bool) {
+	return matchType(text, alphaNumeric)
 }
