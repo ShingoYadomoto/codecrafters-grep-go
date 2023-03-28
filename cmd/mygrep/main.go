@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
-	"unicode/utf8"
 )
 
 // Usage: echo <input_text> | your_grep.sh -E <pattern>
@@ -39,10 +37,6 @@ func main() {
 }
 
 func matchLine(line []byte, pattern string) (bool, error) {
-	if utf8.RuneCountInString(pattern) != 1 && pattern != `\d` && pattern != `\w` && !(strings.HasPrefix(pattern, "[") && strings.HasSuffix(pattern, "]")) {
-		return false, fmt.Errorf("unsupported pattern: %q", pattern)
-	}
-
 	var ok bool
 
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
