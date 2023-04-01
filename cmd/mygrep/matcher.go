@@ -150,19 +150,23 @@ func matchPlus(c byte, text string) (string, bool) {
 }
 
 func matchQuestion(c byte, text string) (string, bool) {
-	if text == "" || (text[0] != c && c != '.') {
+	if text == "" {
 		return "", true
 	}
 
-	if len(text) <= 1 {
+	if text[0] != c && c != '.' {
+		return text, true
+	}
+
+	if len(text) == 1 {
 		return "", true
 	}
 
-	if text[1] == c || c == '.' {
-		return "", false
+	if len(text) > 1 && text[1] != c && c != '.' {
+		return text[1:], true
 	}
 
-	return "", true
+	return "", false
 }
 
 func matchGroup(regexp, text string, negative bool) (reg, tex string, match bool) {
