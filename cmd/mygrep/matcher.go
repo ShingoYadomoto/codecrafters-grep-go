@@ -62,6 +62,11 @@ func matchHere(regexp, text string) bool {
 		if match {
 			return matchHere(regexp[2:], text)
 		}
+	case text != "" && len(regexp) >= 2 && regexp[1] == '?':
+		text, match := matchQuestion(regexp[0], text)
+		if match {
+			return matchHere(regexp[2:], text)
+		}
 	case text != "" && (regexp[0] == '.' || regexp[0] == text[0]):
 		return matchHere(regexp[1:], text[1:])
 	case text != "" && len(regexp) >= 2 && regexp[:2] == `\d`:
@@ -142,6 +147,22 @@ func matchPlus(c byte, text string) (string, bool) {
 		return "", false
 	}
 	return text, true
+}
+
+func matchQuestion(c byte, text string) (string, bool) {
+	if text == "" || (text[0] != c && c != '.') {
+		return "", true
+	}
+
+	if len(text) <= 1 {
+		return "", true
+	}
+
+	if text[1] == c || c == '.' {
+		return "", false
+	}
+
+	return "", true
 }
 
 func matchGroup(regexp, text string, negative bool) (reg, tex string, match bool) {

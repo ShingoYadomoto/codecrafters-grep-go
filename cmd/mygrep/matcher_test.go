@@ -49,6 +49,14 @@ func TestMatch(t *testing.T) {
 
 		{name: "match: d.g", regexp: `d.g`, text: "dog", want: true},
 		{name: "not match: d.g", regexp: `d.g`, text: "cog", want: false},
+
+		{name: "match: dogs", regexp: `dogs?`, text: "dogs", want: true},
+		{name: "match: dogs", regexp: `dog.?`, text: "dogs", want: true},
+		{name: "match: dogs", regexp: `dog.?`, text: "doga", want: true},
+		{name: "match: dogs", regexp: `dog.?`, text: "dogssss", want: false},
+		{name: "match: dogs", regexp: `dog.?`, text: "dogaaaa", want: false},
+		{name: "match: dogs", regexp: `dogs?`, text: "dogsss", want: false},
+		{name: "not match: cat", regexp: `dogs?`, text: "cat", want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
