@@ -57,6 +57,11 @@ func matchHere(regexp, text string) bool {
 		return text == ""
 	case len(regexp) >= 2 && regexp[1] == '*':
 		return matchStar(regexp[0], regexp[2:], text)
+	case text != "" && len(regexp) >= 2 && regexp[1] == '+':
+		text, match := matchPlus(regexp[0], text)
+		if match {
+			return matchHere(regexp[2:], text)
+		}
 	case text != "" && (regexp[0] == '.' || regexp[0] == text[0]):
 		return matchHere(regexp[1:], text[1:])
 	case text != "" && len(regexp) >= 2 && regexp[:2] == `\d`:
@@ -122,6 +127,21 @@ func matchNum(text string) (string, bool) {
 
 func matchAlphaNumeric(text string) (string, bool) {
 	return matchType(text, alphaNumeric)
+}
+
+func matchPlus(c byte, text string) (string, bool) {
+	match := false
+	for {
+		if text[0] != c && c != '.' {
+			break
+		}
+		text = text[1:]
+		match = true
+	}
+	if !match {
+		return "", false
+	}
+	return text, true
 }
 
 func matchGroup(regexp, text string, negative bool) (reg, tex string, match bool) {
