@@ -84,6 +84,8 @@ func matchHere(regexp, text string) bool {
 		if match {
 			return matchHere(regexp, text)
 		}
+	case text != "" && len(regexp) >= 2 && regexp[0] == '(':
+		return matchAlternation(regexp, text)
 	}
 	return false
 }
@@ -196,4 +198,23 @@ func matchGroup(regexp, text string, negative bool) (reg, tex string, match bool
 	}
 
 	return regexp[regi+1:], text[maxTextMatchIdx+1:], !negative
+}
+
+func matchAlternation(regexp, text string) (match bool) {
+	groupStartIdx := 1
+
+	var (
+		regi    = strings.Index(regexp, ")")
+		group   = regexp[groupStartIdx:regi]
+		restReg = regexp[regi+1:]
+	)
+	for _, singleReg := range strings.Split(group, "|") {
+		newReg := singleReg + restReg
+		match := matchHere(newReg, text)
+		if match {
+			return true
+		}
+	}
+
+	return false
 }
